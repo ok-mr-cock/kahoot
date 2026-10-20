@@ -3,7 +3,9 @@ const http = require("http"), fs = require("fs"), path = require("path"), crypto
 const PORT = process.env.PORT || 3000;
 const PASS = process.env.TEACHER_PASSWORD || "ucitel";
 const TASKS = JSON.parse(fs.readFileSync(path.join(__dirname, "tasks.json"), "utf8"));
-const HTML = fs.readFileSync(path.join(__dirname, "public", "index.html"));
+const HTML = fs.readFileSync(
+  [path.join(__dirname, "public", "index.html"), path.join(__dirname, "index.html")].find((f) => fs.existsSync(f))
+);
 
 let S = { phase: "lobby", idx: 0, t0: 0 };      // lobby | question | reveal | end
 const players = new Map();                       // id -> {name, answers:{idx:{c,ms}}, pts:{idx:n}}
