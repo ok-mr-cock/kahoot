@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kdo má pravdu? Soutěž</title>
+<style>
+:root{--bg:#12263A;--card:#1B3550;--ink:#fff;--dark:#1B2430;--teal:#2EC4B6;--orange:#FF9F1C;--red:#E63946;--yellow:#FFE8A3;--green:#3DDC84;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 Calibri,"Segoe UI",system-ui,sans-serif}
+main{max-width:960px;margin:0 auto;padding:16px}
+h1{font:700 26px Cambria,Georgia,serif;margin:0 0 10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{background:var(--card);border-radius:20px;padding:4px 12px;font-weight:700;color:var(--orange)}
+.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
+.zad{background:var(--yellow);color:var(--dark);border-radius:14px;padding:12px 16px;font-size:19px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+@media(max-width:620px){.duo{grid-template-columns:1fr}}
+.side{display:flex;flex-direction:column;align-items:center}
+.bub{background:#fff;color:var(--dark);border-radius:22px;padding:16px 18px;width:100%;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.35);min-height:96px;display:flex;align-items:center}
+.bub:after{content:"";position:absolute;left:50%;bottom:-14px;margin-left:-14px;border:14px solid transparent;border-bottom:0;border-top-color:#fff}
+.av{width:84px;height:84px;margin-top:16px}
+.lbl{font-weight:700}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:16px 10px;color:var(--dark);background:var(--teal);cursor:pointer;min-height:56px}
+button.o{background:var(--orange)}button.y{background:var(--yellow)}button.g{background:#C9D6E2}button.t{background:#fff;padding:12px 22px}
+button:disabled{opacity:.45;cursor:default}
+.sel{outline:4px solid #fff}
+input{font:inherit;padding:14px;border-radius:12px;border:0;width:100%;max-width:340px}
+.ok{color:var(--green)}.bad{color:#FF8A94}
+.row{display:flex;justify-content:space-between;padding:6px 10px;border-radius:10px}
+.row:nth-child(odd){background:rgba(255,255,255,.07)}.me{outline:2px solid var(--orange)}
+.bar{height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--orange);width:100%}
+.dist{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.dist b{display:block;font-size:26px}
+.hide{display:none}
+</style></head><body><main>
+<div class="top"><h1>🚗 Kdo má pravdu?</h1><span class="chip" id="chip"></span></div>
+<div id="v"></div>
+</main>
+<script>
+const TASKS=[{"lvl": 1, "zad": "Do motoru se vejde 4,5 l oleje. Je v něm 3,75 l. Kolik litrů je potřeba doplnit?", "n1": "Dana", "t1": "„Dopočítám: 3,75 + 0,25 = 4 a ještě 0,5, to je 0,75 l.“", "n2": "Cyril", "t2": "„4,5 je 4,50, takže 450 − 375 = 85, doplním 0,85 l.“"}, {"lvl": 1, "zad": "Přední pneumatiky mají tlak 2,2 baru, zadní o 0,35 baru víc. Jaký tlak mají zadní?", "n1": "Emil", "t1": "„0,35 zaokrouhlím na 0,4. Pak 2,2 + 0,4 = 2,6 baru.“", "n2": "Fanda", "t2": "„Dopíšu nulu: 2,20 + 0,35 = 2,55 baru.“"}, {"lvl": 1, "zad": "Nádrž je plná z 1/4. Natankujeme dalších 1/2 nádrže. Jak velká část nádrže je teď plná?", "n1": "Gita", "t1": "„Společný jmenovatel je 4: 1/4 + 1/4 = 2/4 = 1/2 nádrže.“", "n2": "Honza", "t2": "„1/2 = 2/4, takže 1/4 + 2/4 = 3/4 nádrže.“"}, {"lvl": 1, "zad": "Litr nafty stojí 38,50 Kč. Kolik zaplatíme za 20 litrů?", "n1": "Ivo", "t1": "„38,50 · 2 = 77 a pro dvacítku dopíšu dvě nuly: 7 700 Kč.“", "n2": "Jana", "t2": "„38,5 · 2 = 77, takže zaplatíme 77 Kč.“"}, {"lvl": 1, "zad": "Brzdová destička měla 12,5 mm. Po roce zbylo 8,75 mm. O kolik mm se sjela?", "n1": "Karel", "t1": "„12 − 8 = 4 a 75 − 5 = 70, takže se sjela o 4,70 mm.“", "n2": "Lída", "t2": "„Zkusím opačně: 8,75 + 3,75 = 12,5, takže 3,75 mm.“"}, {"lvl": 2, "zad": "Z 6 m kabelu stříháme kousky po 0,25 m. Kolik kousků dostaneme?", "n1": "Petr", "t1": "„0,25 je čtvrtina, takže dělím čtyřmi: 6 : 4 = 1,5 kousku.“", "n2": "Eva", "t2": "„6 : 0,25 = 2,4 kousku.“"}, {"lvl": 2, "zad": "Oprava vozu trvá 3/4 dne. Mechanik odpracoval 2/3 této práce. Jakou část dne pracoval?", "n1": "Adam", "t1": "„2/3 · 3/4 = 6/12 = 1/3 dne.“", "n2": "Bára", "t2": "„Zkrátím trojky: 2/1 · 1/4 = 2/4 = 1/2 dne.“"}, {"lvl": 2, "zad": "Láhev brzdové kapaliny má 3/4 l. Spotřebuje se 0,5 l. Kolik kapaliny zbude?", "n1": "Cyril", "t1": "„0,5 = 1/2 = 2/4, takže 3/4 − 2/4 = 1/4 l.“", "n2": "Dana", "t2": "„3/4 je 0,75. Odečtu 0,75 − 0,5 = 0,70 l.“"}, {"lvl": 2, "zad": "Trasa do servisu měří 150 km a auto ujelo 2/5 trasy. Kolik km ujelo?", "n1": "Emil", "t1": "„150 : 5 = 30, krát 2 je 60 km.“", "n2": "Fanda", "t2": "„2/5 = 0,4 a 150 · 0,4 = 60 km.“"}, {"lvl": 2, "zad": "Auto spotřebuje 6,5 l na 100 km. Kolik litrů spotřebuje na 300 km?", "n1": "Gita", "t1": "„6,5 · 3 = 18 a 15, tedy 18,15 l.“", "n2": "Honza", "t2": "„6,5 + 6,5 + 6,5 = 19,5 l.“"}, {"lvl": 2, "zad": "Vrták měl délku 1 1/4 palce a po ostření se zkrátil o 3/8 palce. Jak je dlouhý teď?", "n1": "Ivo", "t1": "„1 1/4 = 10/8, takže 10/8 − 3/8 = 7/8 palce.“", "n2": "Jana", "t2": "„1 2/8 − 3/8: 3/8 − 2/8 = 1/8, takže 1 1/8 palce.“"}, {"lvl": 2, "zad": "Auto jede 90 km/h. Kolik km ujede za 20 minut?", "n1": "Karel", "t1": "„20 minut je 0,20 hodiny, 90 · 0,2 = 18 km.“", "n2": "Lída", "t2": "„20 minut je 1/20 hodiny, 90 : 20 = 4,5 km.“"}, {"lvl": 2, "zad": "Brzdový kotouč stojí 1 249,50 Kč a destičky 689,90 Kč. Kolik zaplatíme dohromady?", "n1": "Adam", "t1": "„Odhad: 1 250 + 690 = 1 940 Kč. Přesně 1 939,40 Kč.“", "n2": "Bára", "t2": "„1 249,50 + 689,90 = 1 839,40 Kč.“"}, {"lvl": 2, "zad": "Z trubky dlouhé 4,8 m chceme 6 stejně dlouhých dílů. Jak dlouhý je jeden díl?", "n1": "Cyril", "t1": "„4,8 : 6 = 0,8 m, protože 48 : 6 = 8.“", "n2": "Dana", "t2": "„6 dílů po 0,8 m dá 6 · 0,8 = 4,8 m, sedí to.“"}, {"lvl": 3, "zad": "Máme 3/2 l oleje a plníme plechovky po 3/4 l. Kolik plechovek naplníme?", "n1": "Emil", "t1": "„3/2 = 6/4, a 6/4 : 3/4 = 2 plechovky.“", "n2": "Fanda", "t2": "„Převrátím první zlomek: 2/3 · 3/4 = 6/12 = 1/2 plechovky.“"}, {"lvl": 3, "zad": "Auto spotřebuje 7,2 l na 100 km. Na kolik km stačí 36 l?", "n1": "Gita", "t1": "„360 : 72 = 5, takže ujede 5 km.“", "n2": "Honza", "t2": "„36 : 7,2 = 5, to je pětkrát 100 km, tedy 500 km.“"}, {"lvl": 3, "zad": "Servis je od křižovatky 1/5 km a pak ještě 0,3 km. Jak daleko je celkem?", "n1": "Ivo", "t1": "„1/5 = 0,5, takže 0,5 + 0,3 = 0,8 km.“", "n2": "Jana", "t2": "„0,3 = 1/3 a 1/5 + 1/3 = 3/15 + 5/15 = 8/15 km.“"}, {"lvl": 3, "zad": "Motor spotřebuje 0,07 l na kilometr. Kolik litrů spotřebuje na 0,5 km?", "n1": "Karel", "t1": "„7 · 5 = 35, to je 0,35 l.“", "n2": "Lída", "t2": "„7 · 5 = 35 a nuly před: 0,0035 l.“"}, {"lvl": 3, "zad": "Mechanik použil 5/8 l oleje a 0,25 l kapaliny. Kolik litrů použil celkem?", "n1": "Petr", "t1": "„0,25 = 2/8, 5/8 + 2/8 = 7/8 l, to je 0,78 l.“", "n2": "Eva", "t2": "„5/8 = 0,58, takže 0,58 + 0,25 = 0,83 l.“"}, {"lvl": 3, "zad": "Půllitr brzdové kapaliny stojí 189,90 Kč. Kolik stojí litr?", "n1": "Adam", "t1": "„V litru jsou dva půllitry: 2 · 189,90 = 379,80 Kč.“", "n2": "Bára", "t2": "„189,90 : 2 = 94,95 Kč za litr.“"}];
+const FEM=["Bára","Dana","Eva","Jana","Lída"],SK=["F2C6A0","D9A27A","A66E4B","FFDDBF"],HR=["2B2118","6B4423","C98B2B","1F2937","8C3B2E"];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let S=null,teacher=location.pathname.startsWith("/ucitel"),pass="",authed=false,shownAt=0,lastKey="",tick=null,id="";
+try{pass=sessionStorage.getItem("kmp-pw")||"";id=localStorage.getItem("kmp-id")||"";
+  if(!id){id=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random()).replace(/[^\w-]/g,"").slice(0,64);localStorage.setItem("kmp-id",id)}}
+catch(e){id=(Date.now()+"-"+Math.random()).replace(/[^\w-]/g,"")}
+const api=(u,b)=>fetch(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(r=>r.json()).catch(()=>({ok:false}));
+const act=a=>api("/api/teacher",{password:pass,action:a});
+
+function avatar(name,col,seed){
+  const sk=SK[seed%4],hr=HR[(seed*3+1)%5],f=FEM.includes(name),cap=!f&&seed%2===0,top=cap?"#E63946":"#"+hr;
+  return `<svg viewBox="0 0 100 100" class="av" aria-hidden="true">${f?`<rect x="26" y="14" width="48" height="54" rx="22" fill="#${hr}"/>`:""}<path d="M12 100V86a18 18 0 0 1 18-18h40a18 18 0 0 1 18 18v14z" fill="#${col}"/><rect x="43" y="56" width="14" height="16" fill="#${sk}"/><circle cx="50" cy="40" r="22" fill="#${sk}"/><path d="M27 38C27 20 38 14 50 14S73 20 73 38C66 30 34 30 27 38Z" fill="${top}"/>${cap?`<rect x="48" y="30" width="30" height="5" rx="2" fill="${top}"/>`:""}<circle cx="41" cy="42" r="2.6" fill="#1B2430"/><circle cx="59" cy="42" r="2.6" fill="#1B2430"/><ellipse cx="50" cy="52" rx="6" ry="2.6" fill="#B23A48"/></svg>`;
+}
+function cartoon(t,i){
+  return `<div class="zad"><b>Zadání:</b> ${t.zad}</div><div class="duo">
+  <div class="side"><div class="bub">${t.t1}</div>${avatar(t.n1,"2EC4B6",i*2)}<div class="lbl">A: ${t.n1}</div></div>
+  <div class="side"><div class="bub">${t.t2}</div>${avatar(t.n2,"FF9F1C",i*2+1)}<div class="lbl">B: ${t.n2}</div></div></div>`;
+}
+function lbHtml(n){
+  const arr=[...S.players].sort((a,b)=>b.s-a.s);
+  const rows=arr.slice(0,n).map((p,k)=>`<div class="row${p.id===id?" me":""}"><span>${k+1}. ${esc(p.name)}</span><b>${p.s}</b></div>`);
+  const k=arr.findIndex(p=>p.id===id);
+  if(k>=n)rows.push(`<div class="row me"><span>${k+1}. ${esc(arr[k].name)}</span><b>${arr[k].s}</b></div>`);
+  return rows.join("")||"<i>Zatím nikdo.</i>";
+}
+const label=(t,a)=>({AB:"Pravdu mají oba (A i B)",N:"Nemá pravdu nikdo",A:"Pravdu má A – "+t.n1,B:"Pravdu má B – "+t.n2}[a]);
+const opts=t=>[["A","A: "+t.n1,""],["B","B: "+t.n2,"o"],["AB","A i B","y"],["N","Ani jeden","g"]];
+
+function build(){
+  if(!S)return `<div class="card">Připojuji se… (první načtení po delší pauze může trvat až minutu)</div>`;
+  if(teacher&&!authed)return `<div class="card"><h2>Přihlášení učitele</h2><input id="pw" type="password" placeholder="Heslo"><div style="margin-top:12px"><button class="t" id="lg">Přihlásit</button></div></div>`;
+  const i=S.idx,t=TASKS[i],ph=S.phase,m=S.mine,N=TASKS.length,r=S.reveal;
+  if(ph==="end")return `<div class="card"><h2>🏆 Konečné pořadí</h2><div id="lb"></div></div>`+(teacher?`<button class="t" id="nw">Nová hra (smaže hráče)</button>`:"");
+  if(teacher&&ph==="lobby")return `<div class="card"><h2>Čekárna</h2><p>Žáci otevřou hlavní adresu stránky a zadají jméno. Připojeno: <b id="cnt">0</b></p><div id="lb"></div></div><button class="t" id="go">Spustit hru (${N} úloh)</button>`;
+  if(!m&&!teacher)return `<div class="card"><h2>Připoj se</h2><p>Zadej přezdívku (stačí jméno).</p><input id="nm" maxlength="20" placeholder="Jméno"><div style="margin-top:12px"><button class="t" id="jn">Připojit se</button></div></div>`;
+  if(!teacher&&ph==="lobby")return `<div class="card"><h2>Ahoj ${esc(m.name)}!</h2><p>Čekej, až učitel spustí hru. Připojeno: <b id="cnt">0</b></p></div>`;
+  const head=`<div class="top"><span class="chip">Úloha ${i+1} / ${N}</span><span class="chip">${"●".repeat(t.lvl)}${"○".repeat(3-t.lvl)}</span></div>`;
+  if(ph==="question"){
+    let body="";
+    if(teacher)body=`<div class="card">Odpovědělo <b id="ans">0</b> z <b id="cnt">0</b></div><button class="t" id="rv">Odhalit odpověď</button>`;
+    else if(m.answer)body=`<div class="card">Tvoje odpověď: <b>${esc(opts(t).find(o=>o[0]===m.answer)[1])}</b>. Čekej na odhalení.</div>`;
+    else body=`<div class="bar"><i id="tm"></i></div><div class="btns">${opts(t).map(o=>`<button class="${o[2]}" data-c="${o[0]}">${esc(o[1])}</button>`).join("")}</div>`;
+    return head+cartoon(t,i)+body;
+  }
+  const res=teacher?"":m.answer?(m.answer===r.ans?`<p class="ok"><b>Správně! +${m.pts} b.</b></p>`:`<p class="bad"><b>Tentokrát ne.</b> 0 b.</p>`):`<p class="bad">Neodpověděl/a jsi. 0 b.</p>`;
+  return head+`<div class="card"><h2 class="ok">${label(t,r.ans)}</h2>${res}<p><b>Správný výsledek:</b> ${r.res}</p><p><b>V čem je chyba:</b> ${r.who}</p><p><i>${r.tip}</i></p>${teacher?'<div class="dist" id="dist"></div>':""}</div>`+
+    `<div class="card"><h3>Pořadí</h3><div id="lb"></div></div>`+
+    (teacher?(i+1<N?`<button class="t" id="nx">Další úloha</button>`:`<button class="t" id="en">Ukončit a ukázat pořadí</button>`):"");
+}
+function refresh(){
+  const set=(s,h)=>{const e=$(s);if(e)e.innerHTML=h};
+  set("#cnt",S.players.length);set("#lb",lbHtml(teacher||S.phase==="end"?10:5));
+  set("#ans",S.players.filter(p=>p.a).length);
+  if(S.dist){const t=TASKS[S.idx];set("#dist",opts(t).map(o=>`<div><b>${S.dist[o[0]]}</b>${esc(o[1])}${o[0]===S.reveal.ans?" ✓":""}</div>`).join(""))}
+}
+function render(){
+  if(S){const m=S.mine;
+    const key=[S.phase,S.idx,m?1:0,m&&m.answer?1:0,authed].join("|");
+    if(key!==lastKey){lastKey=key;if(S.phase==="question")shownAt=Date.now();
+      $("#v").innerHTML=build();bind();clearInterval(tick);
+      if(S.phase==="question"&&$("#tm"))tick=setInterval(()=>{const e=$("#tm");if(e)e.style.width=Math.max(0,100-(Date.now()-shownAt)/300)+"%"},200)}
+    $("#chip").textContent=teacher?"Učitel":m?m.name+" · "+m.total+" b.":"";
+    refresh();
+  }else $("#v").innerHTML=build();
+}
+function bind(){
+  const on=(s,f)=>{const e=$(s);if(e)e.onclick=f};
+  on("#go",()=>act("start"));on("#rv",()=>act("reveal"));on("#nx",()=>act("next"));on("#en",()=>act("end"));
+  on("#lg",async()=>{pass=$("#pw").value;const r=await act("check");
+    if(r.ok){authed=true;try{sessionStorage.setItem("kmp-pw",pass)}catch(e){}render()}else alert("Špatné heslo.")});
+  const nw=$("#nw");
+  if(nw)nw.onclick=()=>{if(nw.dataset.s!=="1"){nw.dataset.s="1";nw.textContent="Opravdu? Klikni znovu";return}act("reset")};
+  on("#jn",async()=>{const n=($("#nm").value||"").trim().slice(0,20);if(!n)return;
+    const r=await api("/api/join",{id,name:n});if(!r.ok)alert("Připojení se nepodařilo, zkus to znovu.")});
+  document.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll("[data-c]").forEach(x=>x.disabled=true);b.classList.add("sel");
+    api("/api/answer",{id,c:b.dataset.c});
+  });
+}
+(async()=>{
+  $("#v").innerHTML=build();
+  if(teacher&&pass){const r=await act("check");authed=!!r.ok}
+  const es=new EventSource("/api/events?id="+encodeURIComponent(id));
+  es.onmessage=e=>{S=JSON.parse(e.data);render()};
+})();
+</script></body></html>

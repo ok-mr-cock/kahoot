@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: kdo-ma-pravdu
+    runtime: node
+    plan: free
+    buildCommand: echo "bez zavislosti"
+    startCommand: node server.js
+    envVars:
+      - key: TEACHER_PASSWORD
+        sync: false
